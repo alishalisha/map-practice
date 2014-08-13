@@ -44,8 +44,12 @@
 
 	<script>
 	L.mapbox.accessToken = 'pk.eyJ1IjoiYWxpc2hhbGlzaGExMjMiLCJhIjoiUVdVZzBpMCJ9.8RUzYfi47enkaCEGrtXIOA';
-	var map = L.mapbox.map('map', 'alishalisha123.au5cow29')
-	    .setView([8.4494988,-13.7868289], 7);
+	var map = L.mapbox.map('map', 'alishalisha123.au5cow29', {
+		attributionControl: false,
+        infoControl:true
+	});
+	    map.setView([8.4494988,-13.7868289], 7);
+	    map.gridControl.options.follow = true;
 	</script>
 
 </body>
