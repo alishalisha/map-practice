@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset=utf-8 />
+	<title>Ebola Cases</title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<script src='https://api.tiles.mapbox.com/mapbox.js/v2.0.1/mapbox.js'></script>
+	<link href='https://api.tiles.mapbox.com/mapbox.js/v2.0.1/mapbox.css' rel='stylesheet' />
+	<style>
+	  body { 
+	  	margin: 0;
+	  	padding: 0;
+	  	font-family: Arial, sans-serif;
+	  }
+	  #map { position:absolute; top:0; bottom:0; width:100%; z-index: 0; }
+	  #info {
+	  	position: absolute;
+	  	top: 7%;
+	  	left: 2%;
+	  	background: rgba(255,255,255,0.7);
+	  	z-index: 1;
+	  	padding: 1em;
+	  }
+
+	  .info {
+  position:absolute;
+  top:10px;
+  right:10px;
+  }
+  .info div {
+    background:#fff;
+    padding:10px;
+    border-radius:3px;
+    }
+	</style>
+</head>
+
+<body>
+	<div id="info">
+		<h1>Mapping the Ebola Outbreak</h1>
+	</div>
+	
+	<div id="map"></div>
+
+	<script>
+	L.mapbox.accessToken = 'pk.eyJ1IjoiYWxpc2hhbGlzaGExMjMiLCJhIjoiUVdVZzBpMCJ9.8RUzYfi47enkaCEGrtXIOA';
+	var map = L.mapbox.map('map', 'alishalisha123.au5cow29')
+	    .setView([8.4494988,-13.7868289], 7);
+	</script>
+
+</body>
+</html>
