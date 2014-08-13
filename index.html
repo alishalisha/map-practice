@@ -6,6 +6,8 @@
 	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 	<script src='https://api.tiles.mapbox.com/mapbox.js/v2.0.1/mapbox.js'></script>
 	<link href='https://api.tiles.mapbox.com/mapbox.js/v2.0.1/mapbox.css' rel='stylesheet' />
+	<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?2.6.0"></script>
+    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.csv.js?2.6.0"></script>
 	<style>
 	  body { 
 	  	margin: 0;
@@ -23,33 +25,120 @@
 	  }
 
 	  .info {
-  position:absolute;
-  top:10px;
-  right:10px;
-  }
-  .info div {
-    background:#fff;
-    padding:10px;
-    border-radius:3px;
-    }
+		  position:absolute;
+		  top:10px;
+		  right:10px;
+  		}
+  	.info div {
+	    background:#fff;
+	    padding:10px;
+	    border-radius:3px;
+    }	
+    .bar rect {
+	  fill: steelblue;
+	}
+
+	.bar text.value {
+	  fill: white;
+	}
+
+	.axis {
+	  shape-rendering: crispEdges;
+	}
+
+	.axis path {
+	  fill: none;
+	}
+
+	.x.axis line {
+	  stroke: #fff;
+	  stroke-opacity: .8;
+	}
+
+	.y.axis path {
+	  stroke: black;
+	}
 	</style>
 </head>
 
 <body>
 	<div id="info">
 		<h1>Mapping the Ebola Outbreak</h1>
+		<div class="chart"></div>
 	</div>
 	
 	<div id="map"></div>
 
 	<script>
 	L.mapbox.accessToken = 'pk.eyJ1IjoiYWxpc2hhbGlzaGExMjMiLCJhIjoiUVdVZzBpMCJ9.8RUzYfi47enkaCEGrtXIOA';
-	var map = L.mapbox.map('map', 'alishalisha123.au5cow29', {
-		attributionControl: false,
-        infoControl:true
-	});
+	var map = L.mapbox.map('map', 'alishalisha123.au5cow29',
+			  {
+				attributionControl: false,
+		        infoControl:true
+			  },
+			  minZoom = 7,
+			  maxZoom = 7);
+
 	    map.setView([8.4494988,-13.7868289], 7);
 	    map.gridControl.options.follow = true;
+
+	// D3 bar chart
+	var m = [30, 10, 10, 30],
+    w = 560 - m[1] - m[3],
+    h = 530 - m[0] - m[2];
+
+	var format = d3.format(",.0f");
+
+	var x = d3.scale.linear().range([0, w]),
+	    y = d3.scale.ordinal().rangeRoundBands([0, h], .1);
+
+	var xAxis = d3.svg.axis().scale(x).orient("top").tickSize(-h),
+	    yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
+
+	var svg = d3.select(".chart").append("svg")
+	    .attr("width", w + m[1] + m[3])
+	    .attr("height", h + m[0] + m[2])
+	  .append("g")
+	    .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+
+	d3.csv("https://gist.githubusercontent.com/mbostock/1389927/raw/bff541fb9503abec17aee142dd209512aeae62d7/sample-data.csv", function(data) {
+
+	  // Parse numbers, and sort by value.
+	  data.forEach(function(d) { d.value = +d.value; });
+	  data.sort(function(a, b) { return b.value - a.value; });
+
+	  // Set the scale domain.
+	  x.domain([0, d3.max(data, function(d) { return d.value; })]);
+	  y.domain(data.map(function(d) { return d.name; }));
+
+	  var bar = svg.selectAll("g.bar")
+	      .data(data)
+	    .enter().append("g")
+	      .attr("class", "bar")
+	      .attr("transform", function(d) { return "translate(0," + y(d.name) + ")"; });
+
+	  bar.append("rect")
+	      .attr("width", function(d) { return x(d.value); })
+	      .attr("height", y.rangeBand());
+
+	  bar.append("text")
+	      .attr("class", "value")
+	      .attr("x", function(d) { return x(d.value); })
+	      .attr("y", y.rangeBand() / 2)
+	      .attr("dx", -3)
+	      .attr("dy", ".35em")
+	      .attr("text-anchor", "end")
+	      .text(function(d) { return format(d.value); });
+
+	  svg.append("g")
+	      .attr("class", "x axis")
+	      .call(xAxis);
+
+	  svg.append("g")
+	      .attr("class", "y axis")
+	      .call(yAxis);
+	});
+
 	</script>
 
 </body>
